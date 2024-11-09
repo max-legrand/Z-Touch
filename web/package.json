@@ -1,0 +1,27 @@
+{
+  "name": "web",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "rsbuild dev",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-regular-svg-icons": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "solid-icons": "^1.1.0",
+    "solid-js": "^1.8.22"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.0.1",
+    "@rsbuild/plugin-babel": "^1.0.1",
+    "@rsbuild/plugin-solid": "^1.0.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.5.2"
+  }
+}

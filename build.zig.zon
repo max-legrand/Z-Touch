@@ -1,0 +1,29 @@
+.{
+    .name = "Z-touch",
+    .version = "0.0.1",
+    .minimum_zig_version = "0.13.0",
+
+    .dependencies = .{
+        .webview = .{
+            .url = "https://github.com/thechampagne/webview-zig/archive/refs/heads/main.tar.gz",
+            .hash = "1220160fdecbf364434879b7dc3473303cc0d774096b16fef731da3c86741542aecb",
+        },
+        .httpz = .{
+            .url = "git+https://github.com/karlseguin/http.zig?ref=zig-0.13#7d2ddae87af9b110783085c0ea6b03985faa4584",
+            .hash = "12208c1f2c5f730c4c03aabeb0632ade7e21914af03e6510311b449458198d0835d6",
+        },
+        .nfd = .{
+            .url = "https://github.com/froxcey/nfd-zig/archive/refs/heads/master.tar.gz",
+            .hash = "122074ece772fc03abffa254b6e717aa3efc86832488954ac6a962e02a039d781ed1",
+        },
+        .zqlite = .{
+            .url = "git+https://github.com/karlseguin/zqlite.zig?ref=zig-0.13#f21be18a46866b8091346f91166e3fbe1e614b92",
+            .hash = "12205c870252c9d4a38397809f5388b13dbc6a4550f50d5f214a355f601e38814a67",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

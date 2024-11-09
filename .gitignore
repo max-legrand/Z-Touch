@@ -1,0 +1,9 @@
+# Dist
+web/node_modules
+zig-cache/
+.zig-cache/
+zig-out/
+.direnv/
+
+.DS_Store
+Tagit.app/

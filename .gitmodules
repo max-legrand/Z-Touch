@@ -1,0 +1,7 @@
+[submodule "tray"]
+	path = tray
+	url = https://github.com/zserge/tray
+
+[submodule "tray-mac"]
+	path = tray-mac
+	url = https://github.com/dmikushin/tray
