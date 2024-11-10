@@ -54,7 +54,6 @@ pub fn getHomeDir() ![]u8 {
         const envmap = std.process.getEnvMap(std.heap.page_allocator) catch return error.EnvMapFailed;
         const app_data = envmap.get("APPDATA") orelse return error.TempDirNotFound;
 
-        // Create a unique filename with timestamp
         const app_dir = try std.fs.path.join(std.heap.page_allocator, &[_][]const u8{ app_data, "Z-touch" });
         std.fs.makeDirAbsolute(app_dir) catch |err| {
             switch (err) {
@@ -65,11 +64,12 @@ pub fn getHomeDir() ![]u8 {
 
         return app_dir;
     } else {
+
+        // Since unix systems don't have a "AppData" folder, we'll use the user's home directory but use a hidden directory
         const envmap = std.process.getEnvMap(std.heap.page_allocator) catch return error.EnvMapFailed;
         const app_data = envmap.get("HOME") orelse return error.TempDirNotFound;
 
-        // Create a unique filename with timestamp
-        const app_dir = try std.fs.path.join(std.heap.page_allocator, &[_][]const u8{ app_data, "Z-touch" });
+        const app_dir = try std.fs.path.join(std.heap.page_allocator, &[_][]const u8{ app_data, ".Z-touch" });
         std.fs.makeDirAbsolute(app_dir) catch |err| {
             switch (err) {
                 error.PathAlreadyExists => {},

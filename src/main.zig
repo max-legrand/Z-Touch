@@ -15,6 +15,18 @@ pub const appName: []const u8 = "Z-touch";
 pub fn main() !void {
     if (comptime builtin.os.tag == .macos) {
         darwin.initmac();
+    } else if (comptime builtin.os.tag == .windows) {
+        // This wasn't needed, but keeping for later reference.
+        const wndws = @cImport({
+            @cInclude("windows.h");
+            @cInclude("shobjidl.h");
+        });
+        const app_id: [*:0]const u16 = std.unicode.utf8ToUtf16LeStringLiteral("MaxLegrand.ZTouch");
+        _ = wndws.SetCurrentProcessExplicitAppUserModelID(app_id);
+
+        var wc: wndws.WNDCLASSEXW = std.mem.zeroes(wndws.WNDCLASSEXW);
+        wc.cbSize = @sizeOf(wndws.WNDCLASSEXW);
+        wc.lpszClassName = std.unicode.utf8ToUtf16LeStringLiteral("Z-Touch");
     }
     const args = try std.process.argsAlloc(std.heap.page_allocator);
     var dev_mode = false;

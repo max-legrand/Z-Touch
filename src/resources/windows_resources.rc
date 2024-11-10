@@ -1,38 +1,35 @@
 #include <windows.h>
-
+#include <winres.h>
 #define IDI_MAINICON 101
 
-IDI_MAINICON ICON "icon.ico"
-
-// Additional icons (if needed)
-IDI_ICON1 ICON "icon.ico"
-
-// Version Information
-VS_VERSION_INFO VERSIONINFO
+1 VERSIONINFO
 FILEVERSION     1,0,0,0
 PRODUCTVERSION  1,0,0,0
-FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
-FILEFLAGS       0
-FILEOS          VOS_NT_WINDOWS32
-FILETYPE        VFT_APP
-FILESUBTYPE     VFT2_UNKNOWN
+FILEFLAGSMASK   0x3fL
+FILEFLAGS       0x0L
+FILEOS          0x40004L
+FILETYPE        0x1L
+FILESUBTYPE     0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904E4" // U.S. English - multilingual (hex)
+        BLOCK "040904E4"
         BEGIN
-            VALUE "CompanyName",      "Your Company Name"
-            VALUE "FileDescription",  "Your Application Description"
+            VALUE "CompanyName",      "Max Legrand"
+            VALUE "FileDescription",  "Z-Touch"
             VALUE "FileVersion",      "1.0.0.0"
-            VALUE "InternalName",     "your_app"
-            VALUE "LegalCopyright",   "Copyright © 2024 Your Company Name"
-            VALUE "OriginalFilename", "your_app.exe"
-            VALUE "ProductName",      "Your Application Name"
+            VALUE "InternalName",     "Z-Touch"
+            VALUE "LegalCopyright",   "Copyright (C) 2024 Max Legrand"
+            VALUE "OriginalFilename", "Z-Touch.exe"
+            VALUE "ProductName",      "Z-Touch"
             VALUE "ProductVersion",   "1.0.0.0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x409, 1252 // U.S. English, multilingual character set
+        VALUE "Translation", 0x409, 1252
     END
 END
+
+IDI_MAINICON ICON "icon.ico"
+IDI_ICON1 ICON "icon.ico"

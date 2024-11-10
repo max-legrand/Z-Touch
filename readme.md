@@ -57,7 +57,8 @@ zig build --release=fast -Dbundle=true
 
 Mac:
 ```bash
-zig build --release=fast bundle-mac
+zig build --release=fast
+zig build bundle-mac
 ```
 
 ## Roadmap

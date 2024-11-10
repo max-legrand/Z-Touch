@@ -32,33 +32,29 @@ pub const Tray = struct {
         self.icon = try allocator.dupeZ(u8, try resources.getIcon());
 
         // Allocate memory for item_texts
-        self.item_texts = try allocator.alloc([:0]u8, 3);
+        self.item_texts = try allocator.alloc([:0]u8, 2);
         errdefer allocator.free(self.item_texts);
 
         // Initialize item_texts
-        self.item_texts[0] = try allocator.dupeZ(u8, "Hello");
+        self.item_texts[0] = try allocator.dupeZ(u8, "Open");
         errdefer allocator.free(self.item_texts[0]);
-        self.item_texts[1] = try allocator.dupeZ(u8, "Open");
+        self.item_texts[1] = try allocator.dupeZ(u8, "Quit");
         errdefer allocator.free(self.item_texts[1]);
-        self.item_texts[2] = try allocator.dupeZ(u8, "Quit");
-        errdefer allocator.free(self.item_texts[2]);
 
         if (comptime builtin.os.tag == .macos) {
             self.menu_items = try allocator.alloc(c.struct_tray_menu_item, 4);
-            self.menu_items[0] = .{ .text = self.item_texts[0].ptr, .cb = cb_mac, .disabled = 0, .checked = 0, .submenu = null };
-            self.menu_items[1] = .{ .text = self.item_texts[1].ptr, .cb = open_mac, .disabled = 0, .checked = 0, .submenu = null };
-            self.menu_items[2] = .{ .text = self.item_texts[2].ptr, .cb = quit_mac, .disabled = 0, .checked = 0, .submenu = null };
-            self.menu_items[3] = .{ .text = null, .cb = null, .disabled = 0, .checked = 0, .submenu = null }; // Terminator
+            self.menu_items[0] = .{ .text = self.item_texts[0].ptr, .cb = open_mac, .disabled = 0, .checked = 0, .submenu = null };
+            self.menu_items[1] = .{ .text = self.item_texts[1].ptr, .cb = quit_mac, .disabled = 0, .checked = 0, .submenu = null };
+            self.menu_items[2] = .{ .text = null, .cb = null, .disabled = 0, .checked = 0, .submenu = null }; // Terminator
             self.tray = c.tray{
                 .icon_filepath = self.icon.ptr,
                 .menu = &self.menu_items[0],
             };
         } else {
             self.menu_items = try allocator.alloc(c.tray_menu, 4);
-            self.menu_items[0] = .{ .text = self.item_texts[0].ptr, .cb = cb, .disabled = 0, .checked = 0, .submenu = null };
-            self.menu_items[1] = .{ .text = self.item_texts[1].ptr, .cb = open, .disabled = 0, .checked = 0, .submenu = null };
-            self.menu_items[2] = .{ .text = self.item_texts[2].ptr, .cb = quit, .disabled = 0, .checked = 0, .submenu = null };
-            self.menu_items[3] = .{ .text = null, .cb = null, .disabled = 0, .checked = 0, .submenu = null }; // Terminator
+            self.menu_items[0] = .{ .text = self.item_texts[0].ptr, .cb = open, .disabled = 0, .checked = 0, .submenu = null };
+            self.menu_items[1] = .{ .text = self.item_texts[1].ptr, .cb = quit, .disabled = 0, .checked = 0, .submenu = null };
+            self.menu_items[2] = .{ .text = null, .cb = null, .disabled = 0, .checked = 0, .submenu = null }; // Terminator
             self.tray = c.tray{
                 .icon = self.icon.ptr,
                 .menu = &self.menu_items[0],
@@ -131,7 +127,6 @@ pub fn quit(_: ?*c.tray_menu) callconv(.C) void {
 
 pub fn open_inner() void {
     if (!webview.window_open) {
-        std.debug.print("Opening window\n", .{});
         webview.createWindow() catch |err| {
             std.debug.print("Failed to create window: {}\n", .{err});
         };

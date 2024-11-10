@@ -13,7 +13,6 @@ pub var w: WebView = undefined;
 pub var window_open: bool = false;
 
 pub fn trigger_close(_: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
-    std.debug.print("Closing window\n", .{});
     if (comptime builtin.os.tag == .macos) {
         darwin.TriggerClose();
     } else if (comptime builtin.os.tag == .windows) {
@@ -27,7 +26,6 @@ pub fn button_clicked(_: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
 }
 
 pub fn getFiles(seq: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
-    std.debug.print("Getting files\n", .{});
     const example = [_][:0]const u8{"/mnt/d/zutils/src/test.html"};
 
     const allocator = std.heap.page_allocator;
@@ -46,7 +44,6 @@ pub fn getFiles(seq: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
     };
     defer allocator.free(result);
 
-    std.debug.print("Returning result: {s}\n", .{result});
     w.ret(seq, 0, result);
 }
 
@@ -74,8 +71,6 @@ pub fn openFolder(_: [:0]const u8, input: [:0]const u8, _: ?*anyopaque) void {
 }
 
 pub fn openHelper(entry: []const u8, isFile: bool) !void {
-    std.debug.print("Opening: {s}\n", .{entry});
-
     // arguments are JSON objects.
     const entryValue = std.json.parseFromSlice(
         [][]const u8,
@@ -185,7 +180,6 @@ fn updateIdx(seq: [:0]const u8, data: [:0]const u8, _: ?*anyopaque) void {
     }
     input = input_json.value[0];
 
-    std.debug.print("Got data: {any}\n", .{input});
     state.AppState.updateIdx(input.to, input.from) catch {
         std.debug.print("Failed to update index\n", .{});
         w.ret(seq, 1, "Failed to update index");
@@ -224,10 +218,7 @@ fn addProjectHelper(content: []const u8, isPath: bool, error_message_buffer: *[:
 
     // Get the name of the project from the path.
     const project_path = try allocator.dupeZ(u8, input_json.value[0]);
-
-    std.debug.print("Got project: {s}\n", .{project_path});
     const name = try allocator.dupeZ(u8, std.fs.path.basename(project_path));
-    std.debug.print("Basename: {s}", .{name});
 
     var project = state.Project{
         .id = -1,
@@ -279,7 +270,6 @@ fn openFileDialog(seq: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
     };
 
     if (selected) |path| {
-        std.debug.print("Selected path: {s}\n", .{path});
         const allocator = std.heap.page_allocator;
         const json_string = std.json.stringifyAlloc(allocator, path, .{}) catch |err| {
             std.debug.print("Failed to stringify: {}\n", .{err});
@@ -296,7 +286,6 @@ fn openFileDialog(seq: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
         };
         defer allocator.free(result);
 
-        std.debug.print("Returning result: {s}\n", .{result});
         w.ret(seq, 0, result);
         return;
     }
@@ -305,7 +294,6 @@ fn openFileDialog(seq: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
 }
 
 fn minimize(_: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
-    std.debug.print("Minimizing window\n", .{});
     if (comptime builtin.os.tag == .macos) {
         darwin.minimizeWindow();
     } else if (comptime builtin.os.tag == .windows) {
@@ -314,9 +302,6 @@ fn minimize(_: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
 }
 
 fn updateProject(seq: [:0]const u8, data: [:0]const u8, _: ?*anyopaque) void {
-    std.debug.print("updateProject\n", .{});
-    std.debug.print("data: {s}\n", .{data});
-
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
@@ -355,16 +340,12 @@ fn getTags(seq: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
         w.ret(seq, 1, "Failed to get tags");
         return;
     };
-    for (tags) |tag| {
-        std.debug.print("tag: {s}\n", .{tag.name});
-    }
     const allocator = std.heap.page_allocator;
     const json_string = std.json.stringifyAlloc(allocator, tags, .{}) catch |err| {
         std.debug.print("Failed to stringify: {}\n", .{err});
         w.ret(seq, 1, "Failed to stringify file list");
         return;
     };
-    std.debug.print("json_string: {s}\n", .{json_string});
 
     // Convert the allocated string to a null-terminated slice
     const result = allocator.dupeZ(u8, json_string) catch |err| {

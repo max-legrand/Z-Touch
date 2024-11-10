@@ -71,8 +71,6 @@ pub fn TriggerClose() void {
     const windowsArray = @as(*const fn (?*anyopaque, ?*anyopaque) callconv(.C) ?*anyopaque, @ptrCast(&objc.messaging.objc_msgSend))(app, macos.windows);
     const windowCount = @as(*const fn (?*anyopaque, ?*anyopaque) callconv(.C) usize, @ptrCast(&objc.messaging.objc_msgSend))(windowsArray, macos.count);
 
-    // std.debug.print("Total window count: {}\n", .{windowCount});
-
     var i: usize = 0;
     while (i < windowCount) : (i += 1) {
         const window = @as(*const fn (?*anyopaque, ?*anyopaque, usize) callconv(.C) ?*anyopaque, @ptrCast(&objc.messaging.objc_msgSend))(windowsArray, macos.objectAtIndex, i);
@@ -83,21 +81,16 @@ pub fn TriggerClose() void {
         // const utf8String = sel_registerName("UTF8String").?;
         // const c_string = @as(*const fn (?*anyopaque, ?*anyopaque) callconv(.C) [*:0]const u8, @ptrCast(&objc.messaging.objc_msgSend))(window_title, utf8String);
 
-        // std.debug.print("Window {}: Visible: {}, Title: {s}\n", .{ i, is_visible, c_string });
-
         // Check if this is the app window
         const zero_terminated_name = std.heap.page_allocator.dupeZ(u8, appName) catch unreachable;
         const target_title = @as(*const fn (?*anyopaque, ?*anyopaque, [*:0]const u8) callconv(.C) ?*anyopaque, @ptrCast(&objc.messaging.objc_msgSend))(macos.NSString, macos.stringWithUTF8String, zero_terminated_name);
         const title_matches = @as(*const fn (?*anyopaque, ?*anyopaque, ?*anyopaque) callconv(.C) bool, @ptrCast(&objc.messaging.objc_msgSend))(window_title, macos.isEqual, target_title);
 
         if (is_visible and title_matches) {
-            // std.debug.print("Closing window\n", .{});
             _ = @as(*const fn (?*anyopaque, ?*anyopaque) callconv(.C) void, @ptrCast(&objc.messaging.objc_msgSend))(window, macos.close);
             return;
         }
     }
-
-    // std.debug.print("Could not find app window to close\n", .{});
 }
 
 pub fn minimizeWindow() void {

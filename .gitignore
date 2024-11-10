@@ -7,3 +7,5 @@ zig-out/
 
 .DS_Store
 Tagit.app/
+
+web/dist

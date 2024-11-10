@@ -5,11 +5,8 @@ const httpz = @import("httpz");
 var dist_dir: []const u8 = "";
 
 pub fn spinUpServer() !void {
-    std.debug.print("Spinning up server\n", .{});
     const resources_dir = try resources.setupWebResources();
-    std.debug.print("resources_dir: {s}\n", .{resources_dir});
-    dist_dir = try std.fs.path.join(std.heap.page_allocator, &[_][]const u8{ resources_dir, "dist" });
-    std.debug.print("dist_dir: {s}\n", .{dist_dir});
+    dist_dir = try std.fs.path.join(std.heap.page_allocator, &[_][]const u8{ resources_dir, "" });
 
     const allocator = std.heap.page_allocator;
     var server = try httpz.Server().init(allocator, .{ .port = 11110 });
@@ -79,7 +76,6 @@ fn indexHandler(_: *httpz.Request, res: *httpz.Response) !void {
     const index_path = try std.fs.path.join(allocator, &[_][]const u8{ dist_dir, "index.html" });
     defer allocator.free(index_path);
 
-    std.debug.print("Serving index.html from {s}\n", .{index_path});
     const file = try std.fs.openFileAbsolute(index_path, .{});
     defer file.close();
 

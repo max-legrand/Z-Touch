@@ -28,16 +28,31 @@ pub fn build(b: *std.Build) void {
     if (bundle) {
         std.debug.print("Building as a bundled application\n", .{});
         // Build the web resources.
-        const build_args = if (comptime builtin.os.tag == .windows)
-            [_][]const u8{ "bun.exe", "run", "build" }
-        else
-            [_][]const u8{ "bun", "run", "build" };
+        const bun_bin = if (comptime builtin.os.tag == .windows) "bun.exe" else "bun";
 
+        // First, install the dependencies.
         const web_dir = std.fs.path.join(b.allocator, &[_][]const u8{ b.build_root.path.?, "web" }) catch |err| {
             std.debug.print("Failed to join paths: {}\n", .{err});
             return;
         };
 
+        const install_args =
+            [_][]const u8{ bun_bin, "install" };
+        std.debug.print("Installing dependencies in {s}\n", .{web_dir});
+        _ = std.process.Child.run(.{
+            .allocator = b.allocator, //
+            .argv = &install_args,
+            .cwd = web_dir,
+        }) catch |err| {
+            std.debug.print("Failed to install dependencies: {}\n", .{err});
+            return;
+        };
+
+        const build_args = if (comptime builtin.os.tag == .windows)
+            [_][]const u8{ bun_bin, "run", "build" }
+        else
+            [_][]const u8{ bun_bin, "run", "build" };
+        std.debug.print("Building web resources in {s}\n", .{web_dir});
         _ = std.process.Child.run(.{
             .allocator = b.allocator, //
             .argv = &build_args,
@@ -49,7 +64,7 @@ pub fn build(b: *std.Build) void {
 
         // Zip the web resources
         const zip_args = if (comptime builtin.os.tag == .windows)
-            [_][]const u8{ "powershell.exe", "-NoProfile", "-Command", "Compress-Archive -Path .\\dist\\* -DestinationPath .\\dist.zip -Force" }
+            [_][]const u8{ "powershell.exe", "-NoProfile", "-Command", "Compress-Archive -Path .\\dist\\* -DestinationPath .\\..\\src\\resources\\dist.zip -Force" }
         else
             [_][]const u8{ "zip", "-r", "../src/resources/dist.zip", "dist" };
         _ = std.process.Child.run(.{
@@ -82,7 +97,7 @@ pub fn build(b: *std.Build) void {
 
     if (comptime builtin.os.tag == .windows) {
         if (bundle) {
-            std.debug.print("Building as a bundled application\n", .{});
+            std.debug.print("Setting subsystem to windows\n", .{});
             exe.subsystem = .Windows;
         }
         exe.addIncludePath(b.path("tray"));
@@ -253,7 +268,7 @@ fn createMacOSBundle(step: *std.Build.Step, node: std.Progress.Node) anyerror!vo
     const name = "Z-touch";
     const version = "1.0.0";
     const identifier = "com.mlegrand.Z-touch";
-    const icon_path = "icon.png";
+    const icon_path = "src/resources/icon.png";
     const b = step.owner;
 
     // Create app bundle directory structure

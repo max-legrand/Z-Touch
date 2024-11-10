@@ -75,15 +75,6 @@ pub const State = struct {
     pub fn getTags(self: *const State) ![]Tag {
         const allocator = std.heap.page_allocator;
 
-        // Debug current state
-        std.debug.print("\n=== Starting getTags ===\n", .{});
-        for (self.Projects.items) |project| {
-            std.debug.print("Project {d}: {s}\n", .{ project.id, project.name });
-            for (project.tags) |tag| {
-                std.debug.print("  Original tag: id={d}, name='{s}'\n", .{ tag.id, tag.name });
-            }
-        }
-
         // Get all the tags from all the projects.
         var tag_identifier_set = std.StringHashMap(Tag).init(allocator);
         defer tag_identifier_set.deinit();
@@ -96,8 +87,6 @@ pub const State = struct {
                 // Create a unique identifier for the tag
                 const tag_id = try std.fmt.allocPrint(allocator, "{s}-{d}-{s}", .{ tag.name, tag.id, color_string });
 
-                std.debug.print("Processing tag: id={d}, name='{s}', identifier='{s}'\n", .{ tag.id, tag.name, tag_id });
-
                 if (tag_identifier_set.get(tag_id) == null) {
                     // Create a new tag with fresh memory allocation
                     const new_name = try allocator.dupe(u8, tag.name);
@@ -108,8 +97,6 @@ pub const State = struct {
                         .name = new_name,
                         .color = tag.color,
                     };
-
-                    std.debug.print("Adding new unique tag: id={d}, name='{s}'\n", .{ new_tag.id, new_tag.name });
 
                     try tag_identifier_set.put(tag_id, new_tag);
                 }
@@ -133,10 +120,8 @@ pub const State = struct {
                 .color = tag.color,
             };
             try tag_list.append(tag_copy);
-            std.debug.print("Added to final list: id={d}, name='{s}'\n", .{ tag_copy.id, tag_copy.name });
         }
 
-        std.debug.print("=== Finished getTags ===\n\n", .{});
         return tag_list.items;
     }
 
@@ -225,10 +210,6 @@ pub const State = struct {
         from_project.order_idx = to_project.order_idx;
         to_project.order_idx = temp_idx;
 
-        std.debug.print("Updating index from {d} to {d}\n", .{ from, to });
-        std.debug.print("Project at index {d}: {any}\n", .{ from, from_project.name });
-        std.debug.print("Project at index {d}: {any}\n", .{ to, to_project.name });
-
         // Update both projects in the database
         const update_query =
             \\ UPDATE Project
@@ -249,7 +230,6 @@ pub const State = struct {
 
     /// Update a project in its entirety
     pub fn updateProject(self: *State, project: *Project) !void {
-        std.debug.print("updateProject execution\n", .{});
         var conn = self.connection orelse return error.NoConnection;
 
         const update_query =
@@ -269,7 +249,6 @@ pub const State = struct {
 
         const tags_json_string = try std.json.stringifyAlloc(std.heap.page_allocator, project.tags, .{});
         defer std.heap.page_allocator.free(tags_json_string);
-        std.debug.print("tags_json_string: {s}\n", .{tags_json_string});
 
         // Update the project in the database
         conn.exec(update_query, .{
@@ -364,8 +343,6 @@ pub fn initState() !void {
         const project_order = row.int(5);
         const tags_json = row.text(6);
 
-        std.debug.print("tags: {s}\n", .{tags_json});
-
         var tag_list: []Tag = &[_]Tag{};
         if (tags_json.len > 0) {
             // Parse tags with explicit allocator
@@ -381,7 +358,6 @@ pub fn initState() !void {
                     .name = try std.heap.page_allocator.dupeZ(u8, tag.name),
                     .color = tag.color,
                 };
-                std.debug.print("Loaded tag: id={d}, name='{s}'\n", .{ tag_list[i].id, tag_list[i].name });
             }
             parsed.deinit();
         }
