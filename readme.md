@@ -15,6 +15,11 @@ The frontend is built with [Solid](https://www.solidjs.com/) and [Tailwind](http
 ## Installation
 ### Pre-built binaries
 Z-Touch can be downloaded from the [releases](https://github.com/max-legrand/z-touch/releases) page.
+**NOTE FOR MACOS USERS**: The pre-built binaries are not signed. After moving the app to your Applications folder, you will need to run the following command:
+```bash
+xattr -cr /Applications/Z-touch.app
+```
+If you do not want to do this, you will have to build the app from source.
 
 ### Build from source
 To build Z-Touch from source, you will need to install the [Zig](https://ziglang.org/) programming language and the [Bun](https://bun.sh/) package manager.
@@ -63,7 +68,8 @@ zig build bundle-mac
 
 ## Roadmap
 This project in it's current form is a Minimum Viable Product (MVP). There are still several features that I would like to add in the future:
-- Add the tags to the SQLite database
+- Update the MacOS codesigning.
+- Add the tags to the SQLite database.
 - Clean up the UI, I'm not a designer...
 - Since the database is a SQLite database, I would like to add the ability to automatically backup the database either using Git or a cloud sync service.
 - Better support for Linux

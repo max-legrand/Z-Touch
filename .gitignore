@@ -9,3 +9,5 @@ zig-out/
 Z-touch.app/
 
 web/dist
+Z-touch/Z-touch.app/
+Z-touch.dmg
