@@ -7,6 +7,28 @@
 - Cross-platform support (Windows, Mac, and Linux)
 - Lightweight and fast
 
+## Screenshots
+<details>
+  <summary>UI</summary>
+    <img src="screenshots/UI.png"/>
+</details>
+<details>
+  <summary>Edit project</summary>
+    <img src="screenshots/Edit.png"/>
+</details>
+<details>
+  <summary>Tag autocomplete</summary>
+    <img src="screenshots/Tags.png"/>
+</details>
+<details>
+  <summary>Reorder projects</summary>
+    <img src="screenshots/Reorder.png"/>
+</details>
+<details>
+  <summary>Select file dialog</summary>
+    <img src="screenshots/File select.png"/>
+</details>
+
 ## Tech Stack
 Z-Touch is a GUI application built with [Zig](https://github.com/ziglang/zig) and [WebView](https://github.com/thechampagne/webview-zig).
 The frontend is built with [Solid](https://www.solidjs.com/) and [Tailwind](https://tailwindcss.com/).
