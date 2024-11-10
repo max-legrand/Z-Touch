@@ -7,6 +7,7 @@ type ModalProps = {
     tags: Tag[];
     onClose: () => void;
     onSave: (updatedProject: Project) => void;
+    onDelete: (projectId: number) => void;
 };
 
 
@@ -285,6 +286,7 @@ const Modal = (props: ModalProps) => {
                 <div class="modal-actions">
                     <button onClick={() => props.onSave(editedProject())} class="modal-button save-button">Save</button>
                     <button onClick={props.onClose} class="modal-button cancel-button">Cancel</button>
+                    <button onClick={() => props.onDelete(props.project.id)} class="modal-button delete-button">Delete</button>
                 </div>
             </div>
         </div>

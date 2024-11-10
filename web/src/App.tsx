@@ -104,6 +104,14 @@ declare global {
         * @returns A promise that resolves to an array of tags.
         */
         getTags: () => Promise<Tag[]>;
+
+        /** Deletes a project from the database.
+        * 
+        * @param project ID of the project to delete.
+        * @returns void
+        */
+        deleteProject: (projectId: number) => void;
+
     }
 }
 
@@ -129,6 +137,20 @@ const App = () => {
         } catch (error: any) {
             window.zlog(`Error selecting folder: ${error.toString()}`);
         }
+    }
+
+    async function deleteProject(projectId: number) {
+        try {
+            window.deleteProject(projectId);
+            window.getProjects().then((fetchedProjects) => {
+                setProjects(fetchedProjects);
+                window.zlog(`Projects: ${JSON.stringify(fetchedProjects)}`);
+            });
+        } catch (error: any) {
+            window.zlog(`Error deleting project: ${error.toString()}`);
+        }
+
+        closeProjectModal();
     }
 
     function addKeyboardShortcuts() {
@@ -191,6 +213,9 @@ const App = () => {
     function addProjectViaLink() {
         const link = projectLink();
         window.zlog(`Adding project: ${link}`);
+        if (link === "") {
+            return;
+        }
         try {
             window.addProjectViaLink(link);
             window.getProjects().then((fetchedProjects) => {
@@ -448,6 +473,7 @@ const App = () => {
                     project={modalProject()!}
                     onClose={closeProjectModal}
                     onSave={saveProjectChanges}
+                    onDelete={deleteProject}
                 />
             </Show>
         </Show>

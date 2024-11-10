@@ -58,22 +58,32 @@
 }
 
 .save-button {
-    background-color: #4CAF50;
+    background-color: #4ff78d;
     color: black;
 }
 
 .save-button:hover {
-    background-color: #45a049;
+    background-color: #33a15c;
 }
 
 .cancel-button {
-    background-color: #f44336;
+    background-color: #f07d92;
     color: black;
 }
 
 .cancel-button:hover {
-    background-color: #da190b;
+    background-color: #9c515f;
 }
+
+.delete-button {
+    background-color: #be8af2;
+    color: black;
+}
+
+.delete-button:hover {
+    background-color: #7c5a9d;
+}
+
 
 .modal-tags {
     margin-bottom: 10px;

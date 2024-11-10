@@ -72,6 +72,59 @@ pub const State = struct {
     Projects: std.ArrayList(Project),
     connection: ?zqlite.Conn,
 
+    pub fn deleteProject(self: *State, id: isize) !void {
+        std.debug.print("deleting={d}\n", .{id});
+        var conn = self.connection orelse return error.NoConnection;
+
+        // Start a transaction
+        try conn.exec("BEGIN TRANSACTION", .{});
+        errdefer conn.exec("ROLLBACK", .{}) catch {};
+
+        // Find the project's order_idx before deletion
+        var deleted_idx: ?isize = null;
+        for (self.Projects.items) |project| {
+            if (project.id == id) {
+                deleted_idx = project.order_idx;
+                break;
+            }
+        }
+
+        if (deleted_idx == null) return error.ProjectNotFound;
+
+        // Update order_idx for all projects that come after the deleted one
+        const update_order_query =
+            \\ UPDATE Project 
+            \\ SET order_idx = order_idx - 1 
+            \\ WHERE order_idx > ?;
+        ;
+        try conn.exec(update_order_query, .{deleted_idx.?});
+
+        // Delete the project from database
+        try conn.exec("DELETE FROM Project WHERE id = ?;", .{id});
+
+        // Commit the transaction
+        try conn.exec("COMMIT", .{});
+
+        // Update the in-memory project list
+        var new_projects = std.ArrayList(Project).init(std.heap.page_allocator);
+        errdefer new_projects.deinit();
+
+        // Copy all projects except the deleted one and update order_idx
+        for (self.Projects.items) |project| {
+            if (project.id != id) {
+                var updated_project = project;
+                if (project.order_idx > deleted_idx.?) {
+                    updated_project.order_idx -= 1;
+                }
+                try new_projects.append(updated_project);
+            }
+        }
+
+        // Clean up old list and replace with new one
+        self.Projects.deinit();
+        self.Projects = new_projects;
+    }
+
     pub fn getTags(self: *const State) ![]Tag {
         const allocator = std.heap.page_allocator;
 

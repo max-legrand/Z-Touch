@@ -153,6 +153,7 @@ pub fn createWindow() !void {
     w.bind("addProjectViaLink", addProjectViaLink, null);
     w.bind("updateIdx", updateIdx, null);
     w.bind("updateProject", updateProject, null);
+    w.bind("deleteProject", deleteProject, null);
     w.navigate("http://localhost:11110/");
 
     window_open = true;
@@ -179,6 +180,7 @@ fn updateIdx(seq: [:0]const u8, data: [:0]const u8, _: ?*anyopaque) void {
         return;
     }
     input = input_json.value[0];
+    std.debug.print("Got data: {any}\n", .{input});
 
     state.AppState.updateIdx(input.to, input.from) catch {
         std.debug.print("Failed to update index\n", .{});
@@ -354,4 +356,28 @@ fn getTags(seq: [:0]const u8, _: [:0]const u8, _: ?*anyopaque) void {
         return;
     };
     w.ret(seq, 0, result);
+}
+
+fn deleteProject(seq: [:0]const u8, data: [:0]const u8, _: ?*anyopaque) void {
+    // Parse the data as JSON.
+    const input_json = std.json.parseFromSlice([]isize, std.heap.page_allocator, data, .{
+        .ignore_unknown_fields = true,
+    }) catch {
+        w.ret(seq, 1, "Failed to parse input JSON");
+        return;
+    };
+    defer input_json.deinit();
+
+    if (input_json.value.len != 1) {
+        w.ret(seq, 1, "Invalid input");
+        return;
+    }
+
+    const input = input_json.value[0];
+
+    state.AppState.deleteProject(input) catch |err| {
+        std.debug.print("Failed to delete project: {}\n", .{err});
+        w.ret(seq, 1, "Failed to delete project");
+        return;
+    };
 }
