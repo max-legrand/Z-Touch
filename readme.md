@@ -1,6 +1,5 @@
 # Z-Touch
-
-Z-Touch is a cross-platform project organization tool that enables efficient tagging and searching of local projects and links.
+<img src="src/resources/icon.png" width="30"/> Z-Touch is a cross-platform project organization tool that enables efficient tagging and searching of local projects and links.
 
 ## Features
 - Tag and organize projects from the local filesystem or via a web link
