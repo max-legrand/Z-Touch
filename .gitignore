@@ -6,6 +6,6 @@ zig-out/
 .direnv/
 
 .DS_Store
-Tagit.app/
+Z-touch.app/
 
 web/dist

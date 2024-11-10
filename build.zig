@@ -268,7 +268,6 @@ fn createMacOSBundle(step: *std.Build.Step, node: std.Progress.Node) anyerror!vo
     const name = "Z-touch";
     const version = "1.0.0";
     const identifier = "com.mlegrand.Z-touch";
-    const icon_path = "src/resources/icon.png";
     const b = step.owner;
 
     // Create app bundle directory structure
@@ -283,11 +282,11 @@ fn createMacOSBundle(step: *std.Build.Step, node: std.Progress.Node) anyerror!vo
         return;
     };
 
-    const icon_src = std.fmt.allocPrint(b.allocator, "{s}/icon.png", .{b.build_root.path.?}) catch unreachable;
+    const icon_src = std.fmt.allocPrint(b.allocator, "{s}/src/resources/icon.png", .{b.build_root.path.?}) catch unreachable;
 
     const icon_dst = b.fmt("{s}.app/Contents/Resources/{s}.png", .{ name, name });
     std.fs.cwd().copyFile(icon_src, std.fs.cwd(), icon_dst, .{}) catch {
-        std.debug.print("Failed to copy icon: {s}\n", .{icon_path});
+        std.debug.print("Failed to copy icon: {s}\n", .{icon_src});
         return;
     };
 
